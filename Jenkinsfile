@@ -3,6 +3,9 @@ pipeline {
 	environment {
         verCode = UUID.randomUUID().toString()
         registryCredential ='docker'
+	containerName = "shraddhal/seleniumtest2"
+        container_version = "1.0.0.${BUILD_ID}"
+        dockerTag = "${containerName}:${container_version}"
     }
 	tools {
         maven 'maven' 
@@ -46,6 +49,22 @@ pipeline {
 	         sh 'docker run -d --name dockerisedtomcat -p 9090:8080 shivani221/dockerisedtomcat:latest'
 	        }
 	 }
+	stage('compose') {
+            steps {
+                script {
+			sh 'docker-compose up -d --scale chrome=3'
+			
+                }
+	    }
+        }
+	stage('Build test project'){
+		    steps{
+			  sh script:'''
+			  cd seleniumtest
+			  mvn -Dtest="SearchTest.java" test
+		          '''
+			}
+	}    
 		
     }  
 }
