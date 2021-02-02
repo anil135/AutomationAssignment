@@ -20,7 +20,7 @@ pipeline {
 		     writeFile file: "musicstore/src/main/webapp/version.html", text: verCode
             }
         }
-		stage('Build maven project)
+		stage('Build maven project')
 		    steps{
 			  sh script:'''
 			  cd musicstore
