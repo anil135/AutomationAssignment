@@ -62,7 +62,6 @@ pipeline {
 			  catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
 			  sh script:'''
 			  cd seleniumtest
-			  //mvn -Dtest="SearchTest2.java" test
 			  mvn -Dtest="SearchTest.java" test
 		          '''
 			  }
