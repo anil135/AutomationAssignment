@@ -41,8 +41,10 @@ pipeline {
 	}    
 	    
 	stage('Running the container') {
-	    sh 'docker run -d --name mytomcatimage -p 9090:8080 shivani221/mytomcatimage:latest'
-	    }
+		steps{
+	         sh 'docker run -d --name mytomcatimage -p 9090:8080 shivani221/mytomcatimage:latest'
+	        }
+	 }
 		
     }  
 }
