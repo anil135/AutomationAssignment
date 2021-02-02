@@ -29,24 +29,20 @@ pipeline {
 		      '''
 			}
 	}
-	stage('Docker build'){
+	stage('Docker build and publish'){
 		steps{
 		    script{
 			 dockerImage = docker.build("shivani221/mytomcatimage")
+			 docker.withRegistry( '', registryCredential ) {
+                         dockerImage.push("$BUILD_NUMBER")
+                         dockerImage.push('latest')
 			}
 		}
 	}    
 	    
-	stage('Publish Image') {
-                    steps{
-                       script {
-                         docker.withRegistry( '', registryCredential ) {
-                         dockerImage.push("$BUILD_NUMBER")
-                         dockerImage.push('latest')
-                         }
-                      }
-		    }
-	          }
+	stage('Running the container') {
+	    sh 'docker run -d --name mytomcatimage -p 9090:8080 shivani221/mytomcatimage:latest'
+	    }
 		
     }  
 }
