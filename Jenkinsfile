@@ -64,11 +64,9 @@ pipeline {
 			  cd seleniumtest
 			  mvn -Dtest="SearchTest2.java" test
 		          '''
+			  sh "docker rm -f dockerisedtomcat"
 			  //}
 			}
-		     steps{
-                         sh "docker rm -f dockerisedtomcat"
-                       }
 	}    
 	    
 	/*stage('Remove tomcat docker image') {
