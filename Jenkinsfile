@@ -59,21 +59,12 @@ pipeline {
         }
 	stage('Run the tests and remove tomcat docker image once tests are run '){
 		    steps{
-			 // catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
 			  sh script:'''
 			  cd seleniumtest
 			  mvn -Dtest="SearchTest2.java" test
 		          '''
-			  //sh "docker rm -f dockerisedtomcat"
-			  //}
 			}
 	}    
-	    
-	/*stage('Remove tomcat docker image') {
-                    steps{
-                         sh "docker rm -f dockerisedtomcat"
-                         }
-                       }*/
 	  stage('Deploy on tomcat in VM'){   
             steps{
             deploy adapters: [tomcat9(credentialsId: 'tomcat', path: '', url: 'http://devopsteamgoa.westindia.cloudapp.azure.com:8081/')], contextPath: 'musicstore', onFailure: false, war: 'musicstore/target/*.war'
@@ -89,25 +80,10 @@ pipeline {
         }
     }
 	
-      
 		post{
                     always{
                          sh "docker rm -f dockerisedtomcat"
                          }
                      }
 	    
-        /*stage('Show http status')
-        {   steps{
-		 sh 'curl -I \'http://devopsteamgoa.westindia.cloudapp.azure.com:8081/musicstore/index.html\' | grep HTTP'
-		script{
-                 def response = sh(script: 'curl http://devopsteamgoa.westindia.cloudapp.azure.com:8081/musicstore/version.html', returnStdout: true)
-		 if(env.verCode == response)
-		      echo 'Latest version deployed'
-		 else
-		      echo 'Older version deployed'
-		}
-            }
-        }*/
-		
-    //}  
 }
