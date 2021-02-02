@@ -62,8 +62,8 @@ pipeline {
 			  catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
 			  sh script:'''
 			  cd seleniumtest
-			  mvn -Dtest="SearchTest2.java" test
-			  //mvn -Dtest="SearchTest.java" test
+			  //mvn -Dtest="SearchTest2.java" test
+			  mvn -Dtest="SearchTest.java" test
 		          '''
 			  }
 			}
@@ -82,11 +82,13 @@ pipeline {
         stage('Show http status')
         {   steps{
 		 sh 'curl -I \'http://devopsteamgoa.westindia.cloudapp.azure.com:8081/musicstore/index.html\' | grep HTTP'
+		script{
                  def response = sh(script: 'curl http://devopsteamgoa.westindia.cloudapp.azure.com:8081/musicstore/version.html', returnStdout: true)
 		 if(env.verCode == response)
 		      echo 'Latest version deployed'
 		 else
 		      echo 'Older version deployed'
+		}
             }
         }
 		
