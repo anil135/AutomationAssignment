@@ -32,7 +32,7 @@ pipeline {
 		      '''
 			}
 	}
-	stage('Docker build and publish'){
+	stage('Docker build and publish tomcat image'){
 		steps{
 		    script{
 			 dockerImage = docker.build("shivani221/dockerisedtomcat")
@@ -44,12 +44,12 @@ pipeline {
 		}
 	}    
 	    
-	stage('Running the container') {
+	stage('Running the tomcat container') {
 		steps{
 	         sh 'docker run -d --name dockerisedtomcat -p 9090:8080 shivani221/dockerisedtomcat:latest'
 	        }
 	 }
-	stage('compose') {
+	stage('compose up for selenium test') {
             steps {
                 script {
 			sh 'docker-compose up -d --scale chrome=3'
@@ -69,11 +69,26 @@ pipeline {
 			}
 	}    
 	    
-	stage('Remove Unused docker image') {
+	stage('Remove tomcat docker image') {
                     steps{
                          sh "docker rm -f dockerisedtomcat"
                          }
                        }
+	  stage('Deploy on tomcat in VM'){   
+            steps{
+            deploy adapters: [tomcat9(credentialsId: 'tomcat', path: '', url: 'http://devopsteamgoa.westindia.cloudapp.azure.com:8081/')], contextPath: 'musicstore', onFailure: false, war: 'musicstore/target/*.war'
+	    }
+        }
+        stage('Show http status')
+        {   steps{
+		 sh 'curl -I \'http://devopsteamgoa.westindia.cloudapp.azure.com:8081/musicstore/index.html\' | grep HTTP'
+                 def response = sh(script: 'curl http://devopsteamgoa.westindia.cloudapp.azure.com:8081/musicstore/version.html', returnStdout: true)
+		 if(env.verCode == response)
+		      echo 'Latest version deployed'
+		 else
+		      echo 'Older version deployed'
+            }
+        }
 		
     }  
 }
