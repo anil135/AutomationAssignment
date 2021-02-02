@@ -68,7 +68,6 @@ pipeline {
 			}
 		     steps{
                          sh "docker rm -f dockerisedtomcat"
-                         }
                        }
 	}    
 	    
