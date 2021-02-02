@@ -32,7 +32,7 @@ pipeline {
 	stage('Docker build and publish'){
 		steps{
 		    script{
-			 dockerImage = docker.build("shivani221/mytomcatimage")
+			 dockerImage = docker.build("shivani221/dockerisedtomcat")
 			 docker.withRegistry( '', registryCredential ) {
                          dockerImage.push("$BUILD_NUMBER")
                          dockerImage.push('latest')
@@ -43,7 +43,7 @@ pipeline {
 	    
 	stage('Running the container') {
 		steps{
-	         sh 'docker run -d --name mytomcatimage -p 9090:8080 shivani221/mytomcatimage:latest'
+	         sh 'docker run -d --name dockerisedtomcat -p 9090:8080 shivani221/dockerisedtomcat:latest'
 	        }
 	 }
 		
