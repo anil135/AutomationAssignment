@@ -57,22 +57,26 @@ pipeline {
                 }
 	    }
         }
-	stage('Build test project'){
+	stage('Run the tests and remove tomcat docker image once tests are run '){
 		    steps{
-			  catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+			  //catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
 			  sh script:'''
 			  cd seleniumtest
-			  mvn -Dtest="SearchTest.java" test
+			  mvn -Dtest="SearchTest2.java" test
 		          '''
-			  }
+			  //}
 			}
-	}    
-	    
-	stage('Remove tomcat docker image') {
-                    steps{
+		     steps{
                          sh "docker rm -f dockerisedtomcat"
                          }
                        }
+	}    
+	    
+	/*stage('Remove tomcat docker image') {
+                    steps{
+                         sh "docker rm -f dockerisedtomcat"
+                         }
+                       }*/
 	  stage('Deploy on tomcat in VM'){   
             steps{
             deploy adapters: [tomcat9(credentialsId: 'tomcat', path: '', url: 'http://devopsteamgoa.westindia.cloudapp.azure.com:8081/')], contextPath: 'musicstore', onFailure: false, war: 'musicstore/target/*.war'
