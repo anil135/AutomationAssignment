@@ -59,12 +59,20 @@ pipeline {
         }
 	stage('Build test project'){
 		    steps{
+			  catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
 			  sh script:'''
 			  cd seleniumtest
 			  mvn -Dtest="SearchTest.java" test
 		          '''
+			  }
 			}
 	}    
+	    
+	stage('Remove Unused docker image') {
+                    steps{
+                         sh "docker rm -f dockerisedtomcat"
+                         }
+                       }
 		
     }  
 }
