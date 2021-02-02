@@ -2,6 +2,7 @@ pipeline {
     agent any
 	environment {
         verCode = UUID.randomUUID().toString()
+        registryCredential ='docker'
     }
 	tools {
         maven 'maven' 
@@ -28,7 +29,22 @@ pipeline {
 		      '''
 			}
 	}
-		
+	stage('Docker build'){
+		steps{
+		    script{
+			 dockerImage = docker.build shivani221/mytomcatimage
+			}
+		}
+	}    
+	    
+	stage('Publish Image') {
+                    steps{
+                       script {
+                         docker.withRegistry( '', registryCredential ) {
+                         dockerImage.push("$BUILD_NUMBER")
+                         dockerImage.push('latest')
+                         }
+                      }	
 		
     }  
 }
