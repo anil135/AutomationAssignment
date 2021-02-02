@@ -88,6 +88,7 @@ pipeline {
 	     }
 	    }
         }
+	}
         stage('Remove tomcat docker image') {
                     steps{
                          sh "docker rm -f dockerisedtomcat"
