@@ -32,7 +32,7 @@ pipeline {
 	stage('Docker build'){
 		steps{
 		    script{
-			 dockerImage = docker.build shivani221/mytomcatimage
+			 dockerImage = docker.build("shivani221/mytomcatimage")
 			}
 		}
 	}    
