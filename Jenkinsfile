@@ -1,7 +1,7 @@
 pipeline {
     agent any
 	environment {
-        verCode = UUID.randomUUID().toString()
+        version = UUID.randomUUID().toString()
         registryCredential ='docker'
 	containerName = "shraddhal/seleniumtest2"
         container_version = "1.0.0.${BUILD_ID}"
@@ -11,28 +11,33 @@ pipeline {
         maven 'maven' 
     }
     stages {
+	    
         stage('GIT clone repo and creation of version.html') {
             steps {
-			  //get repo
-              git 'https://github.com/vishvaja0630/AutomationAssignment.git'
+               //clone repo
+               git 'https://github.com/vishvaja0630/AutomationAssignment.git'
 			  
-			  //Creating version.html and writing randomUUID to it
-		      sh script:'''
-		    	touch musicstore/src/main/webapp/version.html
-		      '''
-		     println verCode
-		     writeFile file: "musicstore/src/main/webapp/version.html", text: verCode
+	       //Creating version.html and writing randomUUID to it
+	       sh script:'''
+	       touch musicstore/src/main/webapp/version.html
+	       '''
+	       println version
+	       writeFile file: "musicstore/src/main/webapp/version.html", text: version
             }
         }
+	    
 	stage('Build maven project'){
-		    steps{
-			  sh script:'''
-			  cd musicstore
-			  mvn -Dmaven.test.failure.ignore=true clean package
-		      '''
-			}
+		//cd to pom.xml
+		steps{
+		   sh script:'''
+		   cd musicstore
+		   mvn -Dmaven.test.failure.ignore=true clean package
+		   '''
+		  }
 	}
+	    
 	stage('Docker build and publish tomcat image'){
+		//build tomcat image with name dockerisedtomcat using Dockerfile and publish on dockerhub/shivani221	
 		steps{
 		    script{
 			 dockerImage = docker.build("shivani221/dockerisedtomcat")
@@ -45,45 +50,52 @@ pipeline {
 	}    
 	    
 	stage('Running the tomcat container') {
+		//running tomcat container with name dockerisedtomcat using the published image, port is 9090
 		steps{
 	         sh 'docker run -d --name dockerisedtomcat -p 9090:8080 shivani221/dockerisedtomcat:latest'
 	        }
 	 }
-	stage('compose up for selenium test') {
-            steps {
+	    
+	stage('Compose up for selenium test') {
+		//building selenium grid for testing
+                steps {
                 script {
-			sh 'docker-compose up -d --scale chrome=3'
-			
+			sh 'docker-compose up -d --scale chrome=3'	
                 }
 	    }
         }
-	stage('Run the tests and remove tomcat docker image once tests are run '){
-		    steps{
-			  sh script:'''
-			  cd seleniumtest
-			  mvn -Dtest="SearchTest2.java" test
-		          '''
-			}
-	}    
-	  stage('Deploy on tomcat in VM'){   
-            steps{
-            deploy adapters: [tomcat9(credentialsId: 'tomcat', path: '', url: 'http://devopsteamgoa.westindia.cloudapp.azure.com:8081/')], contextPath: 'musicstore', onFailure: false, war: 'musicstore/target/*.war'
-            sh 'curl -I \'http://devopsteamgoa.westindia.cloudapp.azure.com:8081/musicstore/index.html\' | grep HTTP'
-		script{
-                def response = sh(script: 'curl http://devopsteamgoa.westindia.cloudapp.azure.com:8081/musicstore/version.html', returnStdout: true)
-		 if(env.verCode == response)
-		      echo 'Latest version deployed'
-		 else
-		      echo 'Older version deployed'
-	         }
-	    }
-        }
-    }
-	
-		post{
-                    always{
-                         sh "docker rm -f dockerisedtomcat"
-                         }
+	    
+	stage('Testing on dockerised tomcat'){
+		 //testing on dockerised tomcat using selenium
+		 steps{
+		      sh script:'''
+		      cd seleniumtest
+		      mvn -Dtest="SearchTest.java" test
+		      '''
+		      }
+	}  
+	    
+	stage('Deploy on tomcat in VM'){   
+		 //deploying on VM (eg Production Environment)
+                  steps{
+                       deploy adapters: [tomcat9(credentialsId: 'tomcat', path: '', url: 'http://devopsteamgoa.westindia.cloudapp.azure.com:8081/')], contextPath: 'musicstore', onFailure: false, war: 'musicstore/target/*.war'
+                       sh 'curl -I \'http://devopsteamgoa.westindia.cloudapp.azure.com:8081/musicstore/index.html\' | grep HTTP'
+		       script{
+                       def response = sh(script: 'curl http://devopsteamgoa.westindia.cloudapp.azure.com:8081/musicstore/version.html', returnStdout: true)
+		       if(env.verCode == response)
+		       echo 'Latest version deployed'
+		       else
+		       echo 'Older version deployed'
+	               }
+	              }
                      }
+        }
+	
+	//always running docker rm to remove tomcat image
+	post{
+           always{
+                sh "docker rm -f dockerisedtomcat"
+                 }
+             }
 	    
 }
