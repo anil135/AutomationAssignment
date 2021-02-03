@@ -1,7 +1,7 @@
 pipeline {
     agent any
 	environment {
-        version = UUID.randomUUID().toString()
+         UUID uuid = UUID.randomUUID()
         registryCredential ='docker'
 	containerName = "shraddhal/seleniumtest2"
         container_version = "1.0.0.${BUILD_ID}"
@@ -21,8 +21,8 @@ pipeline {
 	       sh script:'''
 	       touch musicstore/src/main/webapp/version.html
 	       '''
-	       println version
-	       writeFile file: "musicstore/src/main/webapp/version.html", text: version
+	       println uuid
+	       writeFile file: "musicstore/src/main/webapp/version.html", text: uuid
             }
         }
 	    
@@ -84,7 +84,7 @@ pipeline {
 		       sh 'curl -sL --connect-timeout 20 --max-time 30 -w "%{http_code}\\\\n" "http://devopsteamgoa.westindia.cloudapp.azure.com:8081/musicstore/index.html" -o /dev/null'
 		       script{
                        def response = sh(script: 'curl http://devopsteamgoa.westindia.cloudapp.azure.com:8081/musicstore/version.html', returnStdout: true)
-		       if(env.version == response)
+		       if(env.uuid == response)
 		       echo 'Latest version deployed'
 		       else
 		       echo 'Older version deployed'
