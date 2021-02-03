@@ -1,6 +1,7 @@
 pipeline {
     agent any
 	environment {
+	UUID uuid = UUID.randomUUID()
         version = UUID.randomUUID().toString()
         registryCredential ='docker'
 	containerName = "shraddhal/seleniumtest2"
@@ -73,7 +74,7 @@ pipeline {
 		      mvn -Dtest="SearchTest.java" test
 		      '''
 		      }
-		 //mvn -Dtest="UUIDTest.java" test -Duuid=env.version
+		 //mvn -Dtest="UUIDTest.java" test -Duuid="$uuid"
 	}  
 	    
 	stage('Deploy on tomcat in VM'){   
