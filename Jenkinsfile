@@ -73,6 +73,7 @@ pipeline {
 		      mvn -Dtest="SearchTest.java" test
 		      '''
 		      }
+		 //mvn -Dtest="UUIDTest.java" test -Duuid=env.version
 	}  
 	    
 	stage('Deploy on tomcat in VM'){   
