@@ -2,7 +2,7 @@ pipeline {
     agent any
 	environment {
 	UUID uuid = UUID.randomUUID()
-        version = UUID.randomUUID().toString()
+        version = uuid.toString()
         registryCredential ='docker'
 	containerName = "shraddhal/seleniumtest2"
         container_version = "1.0.0.${BUILD_ID}"
