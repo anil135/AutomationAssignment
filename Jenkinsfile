@@ -94,10 +94,11 @@ pipeline {
         }
         }//stages closed
 	
-	//always running docker rm to remove tomcat image
+	//always running docker rm to remove dockerisedtomcat image and docker-compose down for selenium
 	post{
            always{
                 sh "docker rm -f dockerisedtomcat"
+		sh 'docker-compose down'	
                  }
              }
 	    
