@@ -36,10 +36,7 @@ pipeline {
 		   '''
 		     }
 	   }
-	  stage('Initialize docker'){
-        def dockerHome = tool 'Docker'
-        env.PATH = "${dockerHome}/bin:${env.PATH}"
-    }
+	 
 	  stage('Docker build and publish tomcat image'){
 		//build tomcat image with name dockerisedtomcat using Dockerfile and publish on dockerhub/shivani221	
 		steps{
