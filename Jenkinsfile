@@ -2,7 +2,7 @@ pipeline {
     agent any
 	environment {
         UUID uuid = UUID.randomUUID()
-        registryCredential ='docker'
+        registryCredential ='docker_cred'
 	containerName = "shraddhal/seleniumtest2"
         container_version = "1.0.0.${BUILD_ID}"
         dockerTag = "${containerName}:${container_version}"
@@ -42,7 +42,7 @@ pipeline {
 		steps{
 		    script{
 			 dockerImage = docker.build("thrivenik/dockerisedtomcat")
-			 docker.withRegistry( '', registryCredential ) {
+			 docker.withRegistry( 'https://hub.docker.com', registryCredential ) {
                          dockerImage.push("$BUILD_NUMBER")
                          dockerImage.push('latest')
 			 }
