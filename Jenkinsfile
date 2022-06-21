@@ -41,7 +41,9 @@ pipeline {
 	  // This step should not normally be used in your script. Consult the inline help for details.
 withDockerRegistry(credentialsId: 'docker', toolName: 'Docker', url: 'https://hub.docker.com/r/thrivenik/firstrepo') {
     // some block
-	docker --version
+	sh script:'''
+	       docker --version
+	       ''' 
 	}
 	}
 	  stage('Docker build and publish tomcat image'){
