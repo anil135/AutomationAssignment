@@ -98,7 +98,7 @@ pipeline {
 	post{
            always{
                 sh "docker rm -f dockerisedtomcat"
-		sh 'docker-compose down'	
+		//sh 'docker-compose down'	
                  }
              }
 	    
