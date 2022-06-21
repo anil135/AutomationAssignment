@@ -40,7 +40,7 @@ pipeline {
 	    stage('Test Docker'){   
 		    steps{
 	  // This step should not normally be used in your script. Consult the inline help for details.
-	withDockerRegistry(credentialsId: 'docker', url: 'https://hub.docker.com/') {
+	withDockerRegistry(credentialsId: 'docker', url: 'https://hub.docker.com') {
     // some block
 	echo "Docker version"
 		sh 'docker --version' 
