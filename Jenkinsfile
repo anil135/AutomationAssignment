@@ -38,13 +38,13 @@ pipeline {
 	   }
 	    
 	    stage('Test Docker'){   
+		    steps{
 	  // This step should not normally be used in your script. Consult the inline help for details.
 withDockerRegistry(credentialsId: 'docker', toolName: 'Docker', url: 'https://hub.docker.com/r/thrivenik/firstrepo') {
     // some block
-	sh script:'''
-	       docker --version
-	       ''' 
-	}
+	sh 'docker --version'   
+	}	    
+		    }
 	}
 	  stage('Docker build and publish tomcat image'){
 		//build tomcat image with name dockerisedtomcat using Dockerfile and publish on dockerhub/shivani221	
