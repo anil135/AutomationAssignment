@@ -16,7 +16,7 @@ pipeline {
 	    stage('GIT clone repo and creation of version.html') {
             steps {
                //clone repo
-               git 'https://github.com/Thrivenikolla/AutomationAssignment.git'
+               https://github.com/anil135/AutomationAssignment.git
 			  
 	       //Creating version.html and writing randomUUID to it
 	       sh script:'''
